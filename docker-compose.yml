@@ -1,0 +1,13 @@
+#version: '3'
+services:
+  basket:
+    build: .
+    image: api3
+    container_name: api3
+    working_dir: /work
+    volumes:
+      - ./work:/work
+    ports:
+      - "8888:8888"
+    command:
+      jupyter-lab --ip 0.0.0.0 --allow-root -b localhost
