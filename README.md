@@ -2,12 +2,11 @@
 
 make_ppvcsv.ipynd
 →自社DBの購入データDBにアクセスし、当該サイトの全購入データを取得
-(DB connect)  (output)hayatomo_6000_oh.csv 
+(DB connect)  (output)ppv_processing.csv
 
-make_basket.ipynd
+make_basket.py
 →全購入データをアポリオリを使用し、該当商品のレコメンドデータを作る
-(input)hayatomo_6000_oh.csv (output) recommend.data
+(input)ppv_processing.csv (output) output_basket.json
 
-api_basket.ipynd
-→フロント側から商品IDを送り、レコメンドデータ参照し、最適な商品IDをレスポンスする
-(input)ppv_id (output)recommend ppv_id
+api_basket.py
+→作り途中なので今回のレビュー対象外
