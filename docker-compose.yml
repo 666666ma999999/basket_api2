@@ -2,13 +2,13 @@
 services:
   basket:
     build: .
-    image: api3
-    container_name: api3
+    image: basket_api
+    container_name: basket_api
     working_dir: /work
     volumes:
       - ./work:/work
     ports:
-      - "8889:8888"
+      - "8888:8888"
     command: >
       jupyter-lab 
       --ip 0.0.0.0 

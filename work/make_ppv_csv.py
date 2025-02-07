@@ -9,7 +9,14 @@ from sqlalchemy.exc import SQLAlchemyError
 import settings
 import os
 
+
+# SSHトンネルを確立する
 def ssh_request(local_port , remote_port):
+
+    """
+    settings.pyよりssh接続情報を読み込み、コマンド実行後、SSHトンネルを確立する
+
+    """
 
     # 現在の作業ディレクトリの絶対パスを取得
     current_directory = os.getcwd()
@@ -23,9 +30,15 @@ def ssh_request(local_port , remote_port):
     print(ssh_host, ssh_port, ssh_user, ssh_key)
 
     """SSHトンネルを確立する"""
+    
+    #open_sshのバージョンが異なるとエラーが出たので修正しました。
     ssh_command = [
         'ssh',
-        '-i', ssh_key,
+        '-v',
+        '-o',
+        'PubkeyAcceptedAlgorithms=+ssh-rsa',
+        '-i' , 
+        ssh_key,
         '-L', f'{local_port}:127.0.0.1:{remote_port}',
         '-N',  # コマンドを実行せずにフォアグラウンドで実行
         '-f',  # バックグラウンドで実行
@@ -41,8 +54,17 @@ def ssh_request(local_port , remote_port):
     print(f"SSH tunnel established on local port {local_port}")
 
 
+# db接続し、DB内のデータを取得する
+def db_connect(local_port ,remote_port, site_id , start_day , end_day):
 
-def db_connect(local_port , site_id , start_day , end_day):
+    """
+    settings.pyよりDB接続情報を読み込み、DB接続する
+    クエリ実行し、取得したデータを返す
+
+    """
+
+    # sshでトンネルを作り接続
+    ssh_request(local_port, remote_port)
 
     # データベースの接続情報
     db_user = settings.DB_USER
@@ -76,8 +98,13 @@ def db_connect(local_port , site_id , start_day , end_day):
     except SQLAlchemyError as e:
         print(f"An error occurred: {e}")
 
-
+# dbから取得したデータをpandasに変換し、csvファイルでエキスポート
 def convert_pandas(data):
+
+    """
+    sqlデータをpandasに変換後、エキスポート
+    """
+
     
     # クエリの結果をPandas DataFrameに変換
     columns = data.keys()
@@ -92,8 +119,14 @@ def convert_pandas(data):
 
     return df
 
+
+#データを加工、マージ
 def processing_data(df):
-    
+    '''
+    元データから新規処理用のデータを作成後、元データにマージ    
+    '''
+
+
     '''新規データ作成'''
     # 全購入金額
     df_total_price = df[['member_id', 'price']].groupby('member_id').sum().reset_index()
@@ -129,7 +162,13 @@ def processing_data(df):
     return df_add
 
 
+#必要情報のみフィルタリング
 def sort_data(df):
+    
+    '''
+    必要情報のみフィルタリング    
+    '''
+
     
     # 6000円以上の人を抽出
     df = df.query(' 6000 < total_sale ')
@@ -152,12 +191,9 @@ def main():
     siteid_list = [443, 427, 486, 423, 477, 483, 484, 486]
 
     for s in siteid_list[5:6]:
-
-        # sshでトンネルを作り接続
-        ssh_request(local_port, remote_port)
-            
+        
         # swan データベース接続
-        data = db_connect(local_port , s , target_day[0] , target_day[1])
+        data = db_connect(local_port , remote_port , s , target_day[0] , target_day[1])
             
         # 取得データをpandasに
         df = convert_pandas(data)

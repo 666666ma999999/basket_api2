@@ -1,24 +1,45 @@
 from pydantic import BaseModel
 import pandas as pd
 from mlxtend.frequent_patterns import apriori, association_rules
+import json
 
-def convert_transaxtion(df):
 
-    import ast #””対策
+#ワンホット用にpandasをseriesデータに加工
+def convert_transaction(df):
+
+    """
+    ワンホット用にpandasをseriesデータに加工
+
+    """
+
+
+    import ast #商品IDに””がついてしまうので除去
     df['ppv_history'] = df['ppv_history'].apply(lambda x: ast.literal_eval(x))
     
     transactions = df['ppv_history'].values.tolist()#[:100]
     #print(transactions)
     return transactions
 
-# データをワンホットエンコーディング
+# アポリオリアルゴリズム学習用のデータセットを作成
 def encode_transactions(transactions):
+
+    """
+    アポリオリアルゴリズム学習用のデータセットを作成
+    """
+
     all_items = sorted(set(item for sublist in transactions for item in sublist))
     encoded_df = pd.DataFrame([[int(item in transaction) for item in all_items] for transaction in transactions], columns=all_items)
     return encoded_df
 
 # アポリオリアルゴリズムを実行
 def apriori_algorithm(transactions):
+    
+    """
+    アポリオリ用の値を設定し、アルゴリズムを実行し、アポリオリデータのマスターデータを作成する
+
+    """
+
+
     df_encoded = encode_transactions(transactions)
     frequent_itemsets = apriori(df_encoded, min_support=0.02, use_colnames=True)
     rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.1, num_itemsets=len(frequent_itemsets))
@@ -28,6 +49,12 @@ def apriori_algorithm(transactions):
 # ルールから特定の商品に関連する信頼度TOP10を抽出
 def get_top_10_confidence_items(item_list, rules):
     
+    """
+    アポリオリのマスターデータから、併売が多い商品を、商品IDごとに羅列したデータを作る
+
+    """
+
+
     #データを格納する空リスト
     recommendations = []
 
@@ -50,7 +77,9 @@ def get_top_10_confidence_items(item_list, rules):
 # jsonに変換
 def convert_json(recommendations):
 
-    import json
+    """
+    データをjsonに変換
+    """
 
     # ファイル名の定義
     json_filename = 'output_basket.json'
@@ -72,7 +101,7 @@ def main():
     df = pd.read_csv('./ppv_processing.csv', index_col=0)
 
     # pandas -> transaction
-    transction = convert_transaxtion(df)
+    transction = convert_transaction(df)
 
     # machine learnig
     rules_set = apriori_algorithm(transction)

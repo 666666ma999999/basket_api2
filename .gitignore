@@ -2,7 +2,6 @@ work/.env
 .DS_Store
 work/.DS_Store
 work/mobweb_key1.pem
-work/mobweb_key2.pem
 
 # Jupyter Notebook
 work/__pycache__/
