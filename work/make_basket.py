@@ -1,8 +1,6 @@
-from pydantic import BaseModel
 import pandas as pd
 from mlxtend.frequent_patterns import apriori, association_rules
 import json
-
 
 #ワンホット用にpandasをseriesデータに加工
 def convert_transaction(df):
