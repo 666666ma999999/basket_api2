@@ -67,7 +67,8 @@ def get_top_10_confidence_items(item_list, rules):
         associated_items = [list(rule['consequents'])[0] for _, rule in top_10.iterrows() if len(rule['consequents']) == 1]   #return [item for sublist in associated_items for item in sublist]
         print(item_id , filtered_rules , top_10)
 
-        recommendations.append([item_id , associated_items])
+        recommendations.append({'Key': item_id, 'Value': associated_items})
+        #recommendations.append([item_id , associated_items])
 
     return recommendations
 
@@ -83,10 +84,12 @@ def convert_json(recommendations):
     json_filename = 'output_basket.json'
 
     # リスト内包表記を使用して辞書のリストに変換
-    data_dict_list = [{'Key': key, 'Value': values} for key, values in recommendations]
+    # data_dict_list = [{'Key': key, 'Value': values} for key, values in recommendations]
     
     with open(json_filename, 'w', encoding='utf-8') as f:
-        json.dump(data_dict_list, f, ensure_ascii=False, indent=4)
+        #json.dump(data_dict_list, f, ensure_ascii=False, indent=4)
+        json.dump(recommendations, f, ensure_ascii=False, indent=4)
+
 
     print(f"データを '{json_filename}' に保存しました。")
 
@@ -105,6 +108,7 @@ def main():
     rules_set = apriori_algorithm(transction)
     #print(df[:10] , transction , encoded_df , rules_set)
  
+    # TODO: listはppv_processing.csvのppv_history　colmunから生成する
     # 商品作成する商品IDリスト
     item_list = ['002', '003', '009', '403', '035', '036', '008', '001', '010', '020', '024', '026', '025', '052', '402', '5', '027', '028', '021', '022', '061', '055', '046', '004', '015', '016', '031', '032', '059', '049', '058', '610', '060', '041', '029', '006', '007', '012', '018', '019', '023', '051', '045']
 
