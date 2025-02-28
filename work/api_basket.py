@@ -9,7 +9,14 @@ from datetime import date  # 日付処理用のdateクラスをインポート
 import requests
 import json
 
+# TODO:まだレビューをしてもらえるほどの完成度にない。
 
+
+# TODO:サーバー側のdir構成を決める
+# TODO:フィルタリングのため、UIDからユーザーの購入情報をswan DBリアルタイムで取得する
+# TODO:htmlからのrequestをどうするか決める(user_id,ppv_id,site_id)サイトごとの決め事は必要か？　
+
+# TODO:サーバー側のdir構成を決める 
 # FastAPIアプリケーションのインスタンスを作成
 #app = FastAPI()
 

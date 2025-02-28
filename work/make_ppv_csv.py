@@ -105,7 +105,7 @@ def convert_pandas(data):
     sqlデータをpandasに変換後、エキスポート
     """
 
-    
+    # todo: pandas.read_sqlを試す
     # クエリの結果をPandas DataFrameに変換
     columns = data.keys()
     df = pd.DataFrame(data.fetchall(), columns=columns)
@@ -188,8 +188,11 @@ def main():
 
     # 集計期間と取得サイト
     target_day = ["2023-01-01", "2024-12-31"]
+
+    # TODO: サイト数増やす。
     siteid_list = [443, 427, 486, 423, 477, 483, 484, 486]
 
+    # TODO: 複数サイトのデータ取得し、正しくデータ取得できるかをテストする
     for s in siteid_list[5:6]:
         
         # swan データベース接続
